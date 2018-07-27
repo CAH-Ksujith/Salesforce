@@ -1,0 +1,52 @@
+<!-- This Page is initiated when we click on Find Duplicates Button from Case Detail Page -->
+
+<apex:page controller="lntcms.DuplicateCases" sidebar="false">
+<apex:form >
+<br/>
+<apex:outputLabel value="Duplicate Cases Found :" rendered="{!CaseSubject!=null}" style="font-weight:bold;"/><br/><br/>
+<br/>
+
+ <apex:pageBlock >
+            
+            <apex:pageBlockButtons >
+               <apex:commandButton value="Select Cases to be Merged" action="{!processSelected}"/>
+            </apex:pageBlockButtons>
+            
+            <!-- In our table we are displaying the cCase records -->
+            <!--
+            <apex:pageBlockTable value="{!cases}" var="c" id="table">
+                <apex:column >-->
+                    <!-- This is our selected Boolean property in our wrapper class -->
+             <!--       <apex:inputCheckbox id="chkCases" value="{!c.selected}"/>
+                </apex:column>
+                <!-- This is how we access the contact values within our cCase container/wrapper -->
+             <!--   <apex:column value="{!c.con.CaseNumber}" rendered="{!$ObjectType.Case.fields.CaseNumber.Accessible}" />
+                <apex:column value="{!c.con.Subject}"    rendered="{!$ObjectType.Case.fields.Subject.Accessible}"/>
+                <apex:column value="{!c.con.AccountId}"  rendered="{!$ObjectType.Case.fields.AccountId.Accessible}"/>
+                <apex:column value="{!c.con.ContactId}"  rendered="{!$ObjectType.Case.fields.ContactId.Accessible}"/>  
+                <apex:column value="{!c.con.OwnerId}"    rendered="{!$ObjectType.Case.fields.OwnerId.Accessible}"/>          
+                <apex:column value="{!c.con.CreatedDate}"    rendered="{!$ObjectType.Case.fields.CreatedDate.Accessible}"/>                  
+            </apex:pageBlockTable> -->
+            
+             <apex:pageBlockTable value="{!cases}" var="c" id="table">
+                <apex:column >
+                  <apex:inputCheckbox id="chkCases" value="{!c.selected}"/>
+               </apex:column>    
+                  <apex:repeat value="{!fields}" var="f">
+                  
+                  <apex:column headerValue="{!f}" rendered="{!f == 'CaseNumber'}">
+                     <apex:outputLink value="/{!c.con.Id}" target="_blank"><apex:outputText value="{!c.con.CaseNumber}"/></apex:outputLink>
+                     </apex:column>
+                     
+                     <apex:column headerValue="{!f}" rendered="{!f == 'Subject'}">
+                     <apex:outputLink value="/{!c.con.Id}" target="_blank"><apex:outputText value="{!c.con.Subject}"/></apex:outputLink>
+                     </apex:column>
+                     
+                     <apex:column value="{!c.con[f]}" rendered="{! f != 'CaseNumber' && f != 'Subject'}"/>
+                    
+                 </apex:repeat>
+           </apex:pageBlockTable>
+           
+        </apex:pageBlock>
+</apex:form>
+</apex:page>

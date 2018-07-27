@@ -1,0 +1,44 @@
+<apex:page standardController="Case" extensions="lntcms.DuplicateCases">
+<script>
+   
+     
+    function clickElem(elem){
+        //alert((elem).find(".id").html());
+        alert('Hii');
+    }
+
+</script>
+
+  <apex:pageBlock >
+           
+            <!-- In our table we are displaying possible duplicates records -->
+            <!--
+            <apex:outputLabel value="No duplicate cases found" rendered="{!IF(possibleCases.size<1, true, false)}"/>
+            <apex:pageBlockTable value="{!possibleCases}" var="c" id="table" rendered="{!IF(possibleCases.size>0, true, false)}">
+                    This is how we access the contact values within our cCase container/wrapper
+                <apex:column value="{!c.CaseNumber}" rendered="{!$ObjectType.Case.fields.CaseNumber.Accessible}" />
+                <apex:column value="{!c.Subject}"    rendered="{!$ObjectType.Case.fields.Subject.Accessible}"/>
+                <apex:column value="{!c.OwnerId}"    rendered="{!$ObjectType.Case.fields.OwnerId.Accessible}"/>          
+                <apex:column value="{!c.CreatedDate}"    rendered="{!$ObjectType.Case.fields.CreatedDate.Accessible}"/>                  
+            </apex:pageBlockTable>
+            -->
+            <apex:outputLabel value="No duplicate cases found" rendered="{!IF(possibleCases.size<1, true, false)}" />
+            <apex:pageBlockTable value="{!possibleCases}" var="pcases" id="table" rendered="{!IF(possibleCases.size>0, true, false)}" onRowClick="">
+            
+                  <apex:repeat value="{!fields}" var="f">
+                  
+                  <apex:column headerValue="{!f}" rendered="{!f == 'CaseNumber'}">
+                     <apex:outputLink value="/{!pcases.Id}" target="_blank"><apex:outputText value="{!pcases[f]}"/></apex:outputLink>
+                     </apex:column>
+                     
+                     <apex:column headerValue="{!f}" rendered="{!f == 'Subject'}">
+                     <apex:outputLink value="/{!pcases.Id}" target="_blank"><apex:outputText value="{!pcases[f]}"/></apex:outputLink>
+                     </apex:column>
+                     
+                   <apex:column value="{!pcases[f]}" rendered="{! f != 'CaseNumber' && f != 'Subject'}"/>  
+                    
+                 </apex:repeat>
+           </apex:pageBlockTable>
+           
+        </apex:pageBlock>`
+</apex:page>

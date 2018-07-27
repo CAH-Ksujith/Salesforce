@@ -1,0 +1,72 @@
+<apex:page controller="lntcms.DuplicateCases" sidebar="false">
+<script>
+    function masterTest() {
+        var radios = document.getElementsByName("parentId");
+        var found = 1;
+        for (var i = 0; i < radios.length; i++) {       
+            if (radios[i].checked) {
+               
+                var store = radios[i].value;
+                var shid = document.getElementById("j_id0:theForm:j_id28:hiddenId");
+      
+                shid.value = store; 
+            
+                found = 0;
+                break;
+            }
+        }
+        if(found == 1)
+        {
+            alert("Please Select the Case");
+            return false;
+        }
+           
+    }
+    
+</script>
+<apex:form id="theForm">
+<br/>
+<!--<apex:outputLabel value="Below Duplicate Cases Found :" rendered="{!CaseSubject!=null}" style="font-weight:bold;"/><br/><br/>-->
+<br/>
+ <apex:pageMessages id="pmsg"/>
+  <apex:pageBlock title="Cases">
+   <apex:pageBlockButtons >
+      <apex:commandButton value="Select Master Case" onclick="return masterTest();"   action="{!caseMethod}"/>
+   </apex:pageBlockButtons>
+   <apex:inputHidden value="{!idRadio}" id="hiddenId"/>
+   <!--      
+   <apex:pageBlockTable value="{!selectedCases}" var="sc">
+        <apex:column headervalue="Select Parent">
+            <input type ="radio" name="parentId" value="{!sc.ID}" > {!sc.ID}</input>
+         </apex:column>
+        <apex:column value="{!sc.CaseNumber}" rendered="{!$ObjectType.Case.fields.CaseNumber.Accessible}"/>
+         <apex:column value="{!sc.Subject}"    rendered="{!$ObjectType.Case.fields.Subject.Accessible}"/>
+         <apex:column value="{!sc.AccountId}"  rendered="{!$ObjectType.Case.fields.AccountId.Accessible}"/>
+         <apex:column value="{!sc.ContactId}"  rendered="{!$ObjectType.Case.fields.ContactId.Accessible}"/>  
+         <apex:column value="{!sc.OwnerId}"    rendered="{!$ObjectType.Case.fields.OwnerId.Accessible}"/>          
+         <apex:column value="{!sc.CreatedDate}" rendered="{!$ObjectType.Case.fields.CreatedDate.Accessible}"/>
+   </apex:pageBlockTable>
+   -->
+   <apex:pageBlockTable value="{!selectedCases}" var="sc" id="table">
+             <apex:column headervalue="Select Parent">
+                <input type ="radio" name="parentId" value="{!sc.ID}" > {!sc.ID}</input>
+             </apex:column> 
+               
+                  <apex:repeat value="{!fields}" var="f">
+                  
+                  <apex:column headerValue="{!f}" rendered="{!f == 'CaseNumber'}">
+                     <apex:outputLink value="/{!sc.ID}" target="_blank"><apex:outputText value="{!sc.CaseNumber}"/></apex:outputLink>
+                     </apex:column>
+                     
+                     <apex:column headerValue="{!f}" rendered="{!f == 'Subject'}">
+                     <apex:outputLink value="/{!sc.ID}" target="_blank"><apex:outputText value="{!sc.Subject}"/></apex:outputLink>
+                     </apex:column>
+                     
+                     <apex:column value="{!sc[f]}" rendered="{! f != 'CaseNumber' && f != 'Subject'}"/>
+                    
+                 </apex:repeat>
+           </apex:pageBlockTable>
+           
+   </apex:pageBlock>
+</apex:form>
+</apex:page>

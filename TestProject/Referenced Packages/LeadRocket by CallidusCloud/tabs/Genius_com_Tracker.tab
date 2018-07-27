@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Tab for getting to the Genius.com Tracker</description>
+    <label>Genius.com Tracker</label>
+    <mobileReady>false</mobileReady>
+    <motif>Custom5: Leaf</motif>
+    <page>Tracker</page>
+</CustomTab>

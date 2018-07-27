@@ -1,0 +1,43 @@
+<apex:page standardController="Timeplanning__c" extensions="CreateTimeplaningHistory" >
+    <apex:form >
+        <apex:pageBlock title="Timeplanning Edit: {!tp1.Name}">
+            <apex:pageBlockSection title="System Information" columns="2">
+               
+                <apex:outputField value="{!tp1.Project_Number__c}"/>
+                <apex:inputField value="{!tp1.Meeting_Offsite__c}"/>
+                <apex:outputField value="{!tp1.name}"/>
+                <apex:inputField value="{!tp1.Meeting_onsite__c}"/>
+                <apex:outputField value="{!tp1.Account__c}"/>                                
+                <apex:inputField value="{!tp1.Hardware_Install__c}"/>
+                <apex:outputField value="{!tp1.Project_Manager__c}"/>
+                <apex:inputField value="{!tp1.Data_Conversion__c}"/>
+                <apex:outputField value="{!tp1.Account_Manager__c}"/>
+                <apex:inputField value="{!tp1.Interface_Setup__c}"/>
+                <apex:outputField value="{!tp1.Order_Form_No__c}"/>
+                <apex:inputField value="{!tp1.System_Configuration__c}"/>
+                <apex:outputField value="{!tp1.Department__c}"/>
+                <apex:inputField value="{!tp1.System_Design__c}"/>
+                <apex:inputField value="{!tp1.Role__c}" required="true" />
+                <!-- <apex:inputField label="Current Stage" value="{!tp1.Phase__c}" required="true"/>-->
+                <!--<apex:inputField value="{!tp1.Field__c}"/>-->
+                <apex:inputField value="{!tp1.System_Testing__c}"/>
+                <apex:inputField value="{!tp1.Date__c}" required="true" />
+                <apex:inputField value="{!tp1.Implementation__c}"/>
+                <br/>
+                <apex:inputField value="{!tp1.Training__c}"/>
+                <br/>
+                <apex:inputField value="{!tp1.Travelling__c}"/>
+                <br/>
+                <apex:inputField value="{!tp1.Other_Onsite__c}"/>
+                <br/>
+                <apex:inputField value="{!tp1.Other_Offsite__c}"/>
+                <br/>
+                <apex:inputField value="{!tp1.Description__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveHistory}" value="Save"/>
+                 <apex:commandButton action="{!Cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

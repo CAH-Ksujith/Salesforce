@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>GeniusScore__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Genius workflows can monitor and update this field for marketing automation.  Be sure to enable lead custom field mapping for the lead field to the contact field.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Genius workflows can monitor and update this field for marketing automation.</inlineHelpText>
+        <label>Genius Score</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Genius_Hard_Bounce_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Genius wil update this field if an email to this Lead encounters a hard bounce. Be sure to enable lead custom field mapping for the lead field to the contact field.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Genius wil update this field if an email to this Lead encounters a hard bounce.</inlineHelpText>
+        <label>Genius Hard Bounce Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Genius_Hard_Bounce__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Genius wil set this checkbox if an email to this Lead encounters a hard bounce. Be sure to enable lead custom field mapping for the lead field to the contact field.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Genius wil set this checkbox if an email to this Lead encounters a hard bounce.</inlineHelpText>
+        <label>Genius Hard Bounce</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Checkbox</type>
+    </fields>
+    <webLinks>
+        <fullName>Create_Genius_E_mail</fullName>
+        <availability>online</availability>
+        <description>Compose and send Genius e-mail to the lead.  Lead must have a valid e-mail address and be owned by a Genius user or a Salesforce.com queue.</description>
+        <displayType>link</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Create Genius E-mail</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>var nextURL = &quot;https://www.salesgenius.com/Salesforce/mgLaunchPad.php?target=createEmail&amp;rid={!Lead.Id}&amp;uid={!User.Id}&amp;session={!API.Session_ID}&amp;server={!API.Partner_Server_URL_180}&quot;;
+var left = 100;
+var top = 100;
+var clientWidth = 1000;
+var clientHeight = 600;
+var windowParam = &quot;toolbar, titlebar, status, hotkeys, scrollbars, menubar, location,&quot;;
+var windowName = &apos;MGApplication&apos;;
+var clientWindow = window.open( nextURL, windowName,windowParam + &apos; width=&apos; + clientWidth + &apos;, height=&apos;+ clientHeight + &apos;, left=&apos;+left + &apos;,top=&apos;+top+&apos;,resizable=yes&apos;);
+clientWindow.focus();</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Create_Genius_Email</fullName>
+        <availability>online</availability>
+        <description>Compose and send Genius e-mail to the selected lead(s).  Lead(s) must have a valid e-mail address and be owned by a Genius user or a Salesforce.com queue.</description>
+        <displayType>massActionButton</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Create Genius E-mail</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+        <url>var records = {!GETRECORDIDS($ObjectType.Lead)};
+if( records.length==0 ) {
+    alert( &apos;No rows selected. Please check some or all and try again.&apos; );
+} else {
+    var form = document.createElement(&apos;FORM&apos;);
+    form.action = &apos;https://www.salesgenius.com/Salesforce/mgLaunchPad.php?target=createEmail&amp;uid={!User.Id}&amp;session={!API.Session_ID}&amp;server={!API.Partner_Server_URL_180}&apos;;
+    form.method = &apos;POST&apos;;
+    form.enctype = &quot;application/x-www-form-urlencoded&quot;;
+    form.target = &quot;_blank&quot;;
+
+    var ids = document.createElement(&apos;INPUT&apos;);
+    ids.type = &apos;HIDDEN&apos;;
+    ids.name = &apos;rid&apos;;
+    ids.value = records.join();
+
+    form.appendChild(ids);
+    document.body.appendChild( form );
+    form.submit();
+}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Genius_History</fullName>
+        <availability>online</availability>
+        <description>View Genius e-mail, web site visit, and chat history for this lead.  Lead must have a valid e-mail address and be owned by a Genius user or Salesforce.com queue.</description>
+        <displayType>link</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Genius History</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>var nextURL = &quot;https://www.salesgenius.com/Salesforce/mgLaunchPad.php?target=contactHistory&amp;email={!Lead.Email}&amp;uid={!User.Id}&amp;session={!API.Session_ID}&amp;server={!API.Partner_Server_URL_180}&quot;;
+var left = 100;
+var top = 100;
+var clientWidth = 1000;
+var clientHeight = 600;
+var windowParam = &quot;toolbar, titlebar, status, hotkeys, scrollbars, menubar, location,&quot;;
+var windowName = &apos;MGApplication&apos;;
+var clientWindow = window.open( nextURL, windowName,windowParam + &apos; width=&apos; + clientWidth + &apos;, height=&apos;+ clientHeight + &apos;, left=&apos;+left + &apos;,top=&apos;+top+&apos;,resizable=yes&apos;);
+clientWindow.focus();</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Launch_Genius_Tracker</fullName>
+        <availability>online</availability>
+        <description>Open the Genius Tracker to monitor e-mail, web site visits, and chats.</description>
+        <displayType>link</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Launch Genius Tracker</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>var nextURL = &quot;https://www.salesgenius.com/Salesforce/mgLaunchPad.php?target=tracker&amp;uid={!User.Id}&amp;session={!API.Session_ID}&amp;server={!API.Partner_Server_URL_180}&quot;;
+var left = 100;
+var top = 100;
+var clientWidth = 270;
+var clientHeight = 452;
+var windowParam = &quot;titlebar=no, hotkeys=no,&quot;;
+var windowName = &apos;MGClient&apos;;
+var clientWindow = window.open( nextURL, windowName,windowParam + &apos; width=&apos; + clientWidth + &apos;, height=&apos;+ clientHeight + &apos;, left=&apos;+left + &apos;,top=&apos;+top+&apos;,resizable=yes&apos;);
+clientWindow.focus();</url>
+    </webLinks>
+</CustomObject>

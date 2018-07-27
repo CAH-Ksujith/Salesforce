@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <description>Represents contact events that have taken place in Genius</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>ActivityBody__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Body of the Genius event.</description>
+        <externalId>false</externalId>
+        <label>Activity Body</label>
+        <length>32000</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>ActivityName__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Name of the Genius event.</description>
+        <externalId>false</externalId>
+        <label>Activity Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CreatorEmail__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Creator of the activity that generated this Genius event.</description>
+        <externalId>false</externalId>
+        <label>Creator Email</label>
+        <length>128</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>EmailFromAddress__c</fullName>
+        <deprecated>false</deprecated>
+        <description>From address of the Genius email that was sent.</description>
+        <externalId>false</externalId>
+        <label>Email From Address</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>EmailSubject__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Subject of the Genius email that was sent.</description>
+        <externalId>false</externalId>
+        <label>Email Subject</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>EmailType__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Type of Genius email that was sent.</description>
+        <externalId>false</externalId>
+        <label>Email Type</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Outlook</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>SalesGenius</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>MarketingGenius</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Workflow</fullName>
+                    <default>false</default>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>EventDateTime__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Date/time when this Genius event occurred.</description>
+        <externalId>false</externalId>
+        <label>Event DateTime</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>EventType__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Type of Genius event that occurred.</description>
+        <externalId>false</externalId>
+        <label>Event Type</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Email Sent</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Email Open</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Visit Start</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Visit End</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>W2L Submission</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>gURL Activity</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>OptOut</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Hard Bounce</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Soft Bounce</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Chat Start</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Chat End</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Email Click Visit</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Return Visit</fullName>
+                    <default>false</default>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>GeniusParentActivityID__c</fullName>
+        <deprecated>false</deprecated>
+        <description>ID of parent activity for this Genius event.</description>
+        <externalId>false</externalId>
+        <label>Genius Parent ActivityID</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>HTTP_Referrer__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Referrer URL for web to lead form this Genius event is related to.</description>
+        <externalId>false</externalId>
+        <label>HTTP Referrer</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>NumberOfPagesVisited__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Number of web pages visited during this Genius event.</description>
+        <externalId>false</externalId>
+        <label>Number of Pages Visited</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>RelatedToAccount__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <description>Account this Genius event is related to.</description>
+        <externalId>false</externalId>
+        <label>Related to Account</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Genius Events</relationshipLabel>
+        <relationshipName>GeniusEvents</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>RelatedToContact__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <description>Contact this event is related to.</description>
+        <externalId>false</externalId>
+        <label>Related to Contact</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Genius Events</relationshipLabel>
+        <relationshipName>GeniusEvents</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>RelatedToLead__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <description>Lead this event is related to.</description>
+        <externalId>false</externalId>
+        <label>Related to Lead</label>
+        <referenceTo>Lead</referenceTo>
+        <relationshipLabel>Genius Events</relationshipLabel>
+        <relationshipName>GeniusEvents</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Related_to_Campaign__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <description>Campaign this Genius event is related to.</description>
+        <externalId>false</externalId>
+        <label>Related to Campaign</label>
+        <referenceTo>Campaign</referenceTo>
+        <relationshipLabel>GeniusEvents</relationshipLabel>
+        <relationshipName>GeniusEvents</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>SentAsUser__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Genius email was sent on behalf of this user.</description>
+        <externalId>false</externalId>
+        <label>Sent As User</label>
+        <length>128</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>WebToLeadFormName__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Name of the web to lead form this Genius event is related to.</description>
+        <externalId>false</externalId>
+        <label>Web to Lead Form Name</label>
+        <length>128</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>WorkflowBlockNumber__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Workflow block number for this Genius event.</description>
+        <externalId>false</externalId>
+        <label>WorkflowBlockNumber</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>WorkflowName__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Name of the workflow for this Genius event.</description>
+        <externalId>false</externalId>
+        <label>Workflow Name</label>
+        <length>128</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>gURLName__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Name of the gURL for this Genius event.</description>
+        <externalId>false</externalId>
+        <label>gURL Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>GeniusEvent</label>
+    <nameField>
+        <label>Genius Event Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>GeniusEvents</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

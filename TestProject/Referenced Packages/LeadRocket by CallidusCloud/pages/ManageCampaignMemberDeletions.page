@@ -1,0 +1,24 @@
+<apex:page controller="genius_com.ManageCampaignMemberDeletionsController" >
+
+<apex:sectionHeader title="Manage Campaign Member Deletions" />
+<apex:form id="solutionForm">
+    <apex:messages />
+	
+	<apex:actionFunction name="deleteRecords" action="{!deleteRecords}" rerender="mainPanel"/>
+		
+    <apex:outputPanel id="mainPanel">
+		Please use this function to delete records that were created prior to last 24 hours.<br/><br/>
+	    <apex:commandButton id="deleteRecords" action="{!triggerDelete}" title="Delete Campaign Member Deletions" value="Delete Campaign Member Deletions" rerender="mainPanel"/>
+	    <br/>
+	    {!statusMessage} 
+	    <apex:outputPanel id="deletePanel" rendered="{!IF(isDelete == true, true, false)}">
+		 	Processing...  
+		 	<script language="javascript"> 
+		 		var t = setTimeout("deleteRecords()",1000);
+		 	</script>	
+		 </apex:outputPanel>
+    </apex:outputPanel>  
+    
+</apex:form>    
+
+</apex:page>

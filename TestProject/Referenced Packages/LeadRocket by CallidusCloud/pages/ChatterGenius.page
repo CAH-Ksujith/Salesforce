@@ -1,0 +1,6 @@
+<apex:page title="Genius.com Chatter" sidebar="false" controller="genius_com.ChatterRefreshController">
+    
+  <apex:outputPanel id="chatterUpdateArea">
+    	This Feature is now disabled.
+  </apex:outputPanel>
+</apex:page>

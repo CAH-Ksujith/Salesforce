@@ -1,0 +1,14 @@
+h1
+{
+color:#000000;
+}
+{
+a:hover
+{
+color:#F665AB;
+}
+a
+{
+color:#52D017;
+font-size:20px;
+}

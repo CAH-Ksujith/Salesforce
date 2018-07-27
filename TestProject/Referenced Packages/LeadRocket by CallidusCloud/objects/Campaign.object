@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <webLinks>
+        <fullName>Add_Members_to_Genius_List</fullName>
+        <availability>online</availability>
+        <description>Add campaign members by member status to a Genius List in order to send Genius e-mail to the selected members.</description>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Add Members to Genius List</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>/**
+ * @copyright 2008, Genius.com
+ */
+
+/*
+ *  generic script to query SForce, grab record IDs from the query
+ *  results and construct a URL to send the data to SG through the
+ *  mgLaunchPad page...
+ */
+
+/*
+ * include needed libraries, SF9 needs this to be explicit (APP-7378)
+ */
+{!REQUIRESCRIPT(&quot;soap/ajax/23.0/connection.js&quot;)}
+
+var sgLaunchPadURLGenerator = function()
+{
+    /*
+     * constants
+     */
+    var newLine = &quot;&lt;br&gt;&quot;;
+    //progress bar/window DIV id
+    var geniusDialogWindowDivID = &apos;genius_progress_bar_container&apos;;
+    var popUpWindowLeft = 100;
+    var popUpWindowTop = 100;
+    var popUpWindowWidth = 1000;
+    var popUpWindowHeight = 600;
+    var popUpWindowParams = &quot;toolbar, titlebar, status, hotkeys, scrollbars, menubar, location,&quot;;
+    var popUpWindowName = &apos;&apos;;
+    
+    /*
+     * variables
+     */
+    var expectedIdFields = [];
+    var targetString = &quot;&quot;;
+    var mainURL = &quot;&quot;;
+    var customParameters = {};
+    var processedRecordsSoFar = 0;
+    //if the query is to be filtered by the user through UI
+    var hasQueryFilters = false;
+    var queryFiltersWhereAndClause = [];
+    var queryFilterCheckBoxes = &quot;&quot;;
+
+    /**
+     * processResultsAndSendToSg
+     * @param queryResult
+     * @param source
+     * will process the query results and send the data to SG
+     */
+    var processResultsAndSendToSg = function(queryResult, source)
+    {
+        /*
+         * even the &quot;search for more&quot; should have at least
+         * 1 result, if not, alert the user
+         */
+        if (queryResult.size &lt; 1)
+        {
+            alert(&quot;No members found...&quot;);
+            removeGeniusDialogWindow();
+            return;
+        }
+
+        //get the records array
+        var records = queryResult.getArray(&apos;records&apos;);
+
+        //loop through the records and construct html string
+        for ( var i = 0; i &lt; records.length; i++)
+        {
+            var campaignMember = records[i];
+
+            var foundId = null;
+            //try and map the results to find a sForce ID
+            for ( var j = 0; j &lt; source.expectedIdFields.length; j++)
+            {
+                var thisItem = campaignMember[source.expectedIdFields[j]];
+                if (thisItem)
+                {
+                    foundId = thisItem;
+                }
+            }
+            //if a sforce ID is found, add it to the master list of IDs
+            if (foundId)
+            {
+                //Ids in SG are only 15 char in length, need to cut this
+                foundId = foundId.substr(0, 15);
+                source.thisScope.output.append(foundId).append(&quot;,&quot;);
+                processedRecordsSoFar++;
+            }
+        }
+        
+        //indicate how many records were just processed to the user
+        updateProgressBar(queryResult, processedRecordsSoFar);
+
+        //if no sf-contacts/leads are found
+        if (source.thisScope.output.length &lt; 1)
+        {
+            alert(&quot;No member ids found...&quot;);
+            removeGeniusDialogWindow();
+            return;
+        }
+        
+        //if there are more results, grab them
+        if (queryResult.queryLocator)
+        {
+            source.thisScope.doQuery.call(source.thisScope, source.query, queryResult, true);
+        }
+        //otherwise send the data to the server
+        else
+        {
+            var str = source.thisScope.output.toString();
+            //remove any commas at the end of the string
+            if (str.length &gt; 0)
+            {
+                str = str.substr(0, str.length - 1);
+            }
+            callMgLaunchPadWithFoundRecords_POST(str);
+        }
+    }
+
+    /**
+     * callMgLaunchPadWithFoundRecords_GET
+     * will open a new window pointing to SG/mgLaunchPad with the 
+     * recordIds passed in as a query parameter
+     * @param recordIds
+     * NOTE: this FN is not fully tested, and not used
+     */
+    var callMgLaunchPadWithFoundRecords_GET = function(recordIds)
+    {
+        //send the data to SG using a URL
+        var subURL = &quot;Salesforce/mgLaunchPad.php?&quot;;
+
+        //base URL and main set of params to send to SG
+        var URL = mainURL + subURL + &quot;target=&quot; + targetString + &quot;&amp;&quot; + &quot;rid=&quot; + recordIds + &quot;&amp;&quot; + &quot;uid={!User.Id}&amp;&quot; + &quot;session={!API.Session_ID}&amp;&quot; + &quot;server={!API.Partner_Server_URL_180}&quot;;
+
+        /*
+         * turn each custom param into a GET query key/value string appended
+         * to the main URL to call
+         */
+        for (paramItem in customParameters)
+        {
+            if (typeof (customParameters[paramItem]) != &apos;function&apos;)
+            {
+                URL += &quot;&amp;&quot; + encodeURIComponent(paramItem) + &quot;=&quot; + encodeURIComponent(customParameters[customParameters]);
+            }
+        }
+
+        var clientWindow = window.open(URL, popUpWindowName, popUpWindowParams + &apos; width=&apos; + popUpWindowWidth + &apos;, height=&apos; + popUpWindowHeight + &apos;, left=&apos; + popUpWindowLeft + &apos;,top=&apos; + popUpWindowTop + &apos;,resizable=yes&apos;);
+        if (clientWindow)
+        {
+            clientWindow.focus();
+        }
+        else
+        {
+            alert(&quot;Please disable your pop-up blocker...&quot;);
+        }
+    }
+
+    /**
+     * callMgLaunchPadWithFoundRecords_POST
+     * will open a new window pointing to SG/mgLaunchPad with the 
+     * recordIds passed in as a POST parameter
+     * @param recordIds
+     */
+    var callMgLaunchPadWithFoundRecords_POST = function(recordIds)
+    {
+        //send the data to SG using a URL
+        var subURL = &quot;Salesforce/mgLaunchPad.php?&quot;;
+
+        /*
+         * base object which represents parameters to be POSTed
+         * to the URL and their values
+         */
+        var URLParams =
+        {
+            target :targetString,
+            rid :recordIds,
+            uid :&quot;{!User.Id}&quot;,
+            session :&quot;{!API.Session_ID}&quot;,
+            server :&quot;{!API.Partner_Server_URL_180}&quot;
+        };
+
+        /*
+         * combine customParameters with the base URLParams
+         * to be evaluated later in a single loop
+         */
+        for (paramItem in customParameters)
+        {
+            if (typeof (customParameters[paramItem]) != &apos;function&apos;)
+            {
+                URLParams[paramItem] = customParameters[paramItem];
+            }
+        }
+
+        //open a new browser window
+        var clientWindow = window.open(&quot;&quot;, popUpWindowName, popUpWindowParams + &apos; width=&apos; + popUpWindowWidth + &apos;, height=&apos; + popUpWindowHeight + &apos;, left=&apos; + popUpWindowLeft + &apos;,top=&apos; + popUpWindowTop + &apos;,resizable=yes&apos;);
+        
+        //if the window exists (wasn&apos;t blocked)
+        if (clientWindow)
+        {
+            try
+            {
+                clientWindow.focus();
+                clientWindow.document.open();
+                clientWindow.document.write(&quot;&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Redirecting...&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY&gt;&lt;FORM id=&apos;myForm&apos; action=&apos;&quot; + mainURL + subURL + &quot;&apos; method=&apos;POST&apos;&gt;&quot;);
+                /*
+                 * loop through and create a hidden El for each custom param
+                 */
+                for (paramItem in URLParams)
+                {
+                    if (typeof (URLParams[paramItem]) != &apos;function&apos;)
+                    {
+                        clientWindow.document.write(&quot;&lt;input type=&apos;hidden&apos; id=&apos;&quot; + paramItem + &quot;&apos; name=&apos;&quot; + paramItem + &quot;&apos; value=&apos;&quot; + URLParams[paramItem] + &quot;&apos;&gt;&quot;);
+                    }
+                }
+            }
+            catch(e)
+            {
+                //An error may occur if the window has been opened, but the content has since changed
+                //... and we no longer have the rights to the window, inform the user at this point
+                alert(&quot;There is another SalesGenius window instance open... please close other SalesGenius.com windows and try again.&quot;);
+            }
+            //on IE6, this causes an error with no side-effects, so the error
+            // ... is being silenced
+            try
+            {
+                clientWindow.document
+                        .write(&quot;&lt;/form&gt;&lt;/body&gt;&lt;script&gt;document.getElementById(&apos;myForm&apos;).submit();&lt;/script&gt;&lt;/html&gt;&quot;);
+                clientWindow.document.close();
+            }
+            catch(e)
+            {
+            }
+        }
+        else
+        {
+            alert(&quot;Please disable your pop-up blocker...&quot;);
+        }
+        removeGeniusDialogWindow();
+    }
+
+    /**
+     * queryFailed
+     * if the query fails, alert the user
+     */
+    var queryFailed = function(error, source)
+    {
+        alert(&quot;An error has occurred: &quot; + error);
+        removeGeniusDialogWindow();
+    }
+
+    /**
+     * setMainURL
+     * will set the base path to call
+     */
+    this.setMainURL = function(newURL)
+    {
+        mainURL = newURL;
+    }
+
+    /**
+     * addExpectedIdField
+     * add a parameter which corresponds to a sfRecordId 
+     * in the query results -- used to create the GET string
+     */
+    this.addExpectedIdField = function(newIdField)
+    {
+        expectedIdFields.push(newIdField);
+    }
+
+    /**
+     *  addTargetString
+     *  will add a target string to be processed by mgLaunchPad
+     */
+    this.addTargetString = function(targetStr)
+    {
+        targetString = targetStr;
+    }
+    
+    /**
+     * will add a custom parameter to the POST that is made to 
+     * the genius app server
+     */
+    this.addCustomParameters = function(paramObj)
+    {
+        /*
+         * loop through all parameters passed in an append
+         * to master custom parameter array
+         */
+        for (paramItem in paramObj)
+        {
+            if (typeof (paramObj[paramItem]) != &apos;function&apos;)
+            {
+                customParameters[paramItem] = paramObj[paramItem];
+            }
+        }
+    }
+    
+    /**
+     * will return a state object for use with the sforce query call
+     * @param string query the query to run on SF
+     * @return object a state object based on the query
+     */
+    var getState = function(query)
+    {
+        return (
+        {
+            expectedIdFields :expectedIdFields,
+            startTime :new Date().getTime(),
+            queryStr :query,
+            thisScope: this
+        });
+    }
+    
+    /**
+     * function to get a callback object for the sforce query call
+     * @param object a state object to associate with the callback object
+     * @return object a callback object based on the state
+     */
+    var getCallBack = function(state)
+    {
+        return (
+        {
+            // call salesgenius if successful
+            onSuccess :processResultsAndSendToSg,
+            // call queryFailed and alert the user if the api request fails
+            onFailure :queryFailed,
+            source :state
+        });
+    }
+    
+    /**
+     * this function will get the dimensions of the current window
+     * ... coded with some help on the code from various sites on the web
+     * @return object an object with nodes &apos;width&apos; and &apos;height&apos; for the center
+     */
+    var getWindowDimensions = function()
+    {
+        // IE
+        if (!window.innerWidth)
+        {
+            // strict mode
+            if (!(document.documentElement.clientWidth == 0))
+            {
+                w = document.documentElement.clientWidth;
+                h = document.documentElement.clientHeight;
+            }
+            // quirks mode
+            else
+            {
+                w = document.body.clientWidth;
+                h = document.body.clientHeight;
+            }
+        }
+        // w3c
+        else
+        {
+            w = window.innerWidth;
+            h = window.innerHeight;
+        }
+        return (
+        {
+            width :w,
+            height :h
+        });
+    }
+    
+    /**
+     * this will remove the progress bar window from the DOM
+     */
+    var removeGeniusDialogWindow = function()
+    {
+        var oldDIV = document.getElementById(geniusDialogWindowDivID);
+        if (oldDIV)
+        {
+            oldDIV.parentNode.removeChild(oldDIV);
+        }
+    }
+    
+    /**
+     * this function will insert a &quot;window&quot; looking table into the DOM
+     * positioned absolute to the center of the window at opening time
+     */
+    var createProgressBarWindow = function()
+    {
+        newDiv = document.createElement(&quot;div&quot;);
+        var templateHTML = &quot;&quot;;
+        templateHTML += getGeniusWindowHead();
+        templateHTML += &quot;Please wait while we gather information about your campaign members...&quot;;
+        templateHTML += &quot;&lt;br&gt;&lt;br&gt;&lt;table id=genius_progress_bar style=&apos;background:#fff;&apos; width=100% border=0 height=50% cellpadding=3 cellspacing=0&gt;&quot;;
+        templateHTML += &quot;&lt;tr&gt;&quot;;
+        
+        /*
+         * generate the 10 progress indicators for each 10 %
+         */
+        for ( var i = 1; i &lt;= 10; i++)
+        {
+            templateHTML += &quot;&lt;td width=10% id=&apos;genius_progress_bar_section_&quot;+i+&quot;&apos; style=&apos;border-bottom: 1px solid #ccc; border-top: 1px solid #ccc; height:10px; background:#fff&apos;&gt;&lt;/td&gt;&quot;;
+        }
+
+        templateHTML += &quot;&lt;tr style=&apos;font-size:8px;&apos;&gt;&lt;td colspan=1 align=left&gt;0%&lt;/td&gt;&lt;td colspan=8 width=100%&gt;&lt;/td&gt;&lt;td colspan=1 align=right&gt;100%&lt;/td&gt;&lt;/tr&gt;&quot;;
+        templateHTML += &quot;&lt;/tr&gt;&quot;;
+        templateHTML += &quot;&lt;/table&gt;&lt;br&gt;&lt;br&gt;&quot;;
+        templateHTML += getGeniusWindowEnd();
+        newDiv.innerHTML = templateHTML;
+        newDiv.id = geniusDialogWindowDivID;
+
+        document.body.appendChild(newDiv);
+    }
+    
+    /**
+     * will generate a single line of HTML for a given checkbox given the correct values
+     * @param string name the name attribute of the checkbox el
+     * @param string value the value attrinbute of the checkbox el
+     * @param string display the display text following the checkbox el
+     * @param string style an inline CSS string (style attribute value) for a span to wrap around the
+     *                  ... display text of the checkbox el
+     * @return string HTML for the checkbox
+     */
+    var getCheckBoxHTMLString = function(name, value, display, style)
+    {
+        if (typeof (style) != &apos;undefined&apos;)
+        {
+            display = &quot;&lt;span style=\&quot;&quot;+style+&quot;\&quot;&gt;&quot;+display+&quot;&lt;/span&gt;&quot;;
+        }
+        return (&quot;&lt;input type=&apos;checkbox&apos; name=&apos;&quot;+filter+&quot;&apos; value=\&quot;&quot;+value+&quot;\&quot;&gt;&quot;+display+newLine);
+    }
+    
+    /**
+     * will create HTML content and set to the class variable &apos;queryFilterCheckBoxes&apos; based
+     * on the passed in params
+     * @param string whereAndClause a string which becomes the value of the checkBox -- and is used to filter the SF-Sql query
+     * @param array values an array representing filter display name =&gt; filter value
+     * @param string textDescription textual description for this block of checkboxes
+     * @param object defaultObj an object of &quot;value,display,name&quot; used to create a default value checkbox for the group
+     */
+    var createQueryFilterCheckBox = function(whereAndClause, values, textDescription, defaultObj)
+    {
+        queryFilterCheckBoxes += textDescription+newLine+&quot;&lt;hr&gt;&quot;;
+        /*
+         * will generate HTML for each individual value as a checkbox
+         */
+        for (filter in values)
+        {
+            if(typeof(values[filter]) != &apos;function&apos;)
+            {
+                queryFilterCheckBoxes += getCheckBoxHTMLString(filter, (whereAndClause+&quot; &apos;&quot;+values[filter]+&quot;&apos;&quot;), values[filter]);
+            }
+        }
+        if(typeof(defaultObj)!=&apos;undefined&apos;)
+        {
+            queryFilterCheckBoxes += getCheckBoxHTMLString(defaultObj.name, (whereAndClause+&quot; &apos;&quot;+defaultObj.value+&quot;&apos;&quot;), defaultObj.display, &quot;font-style:italic;font-weight:bold;&quot;);
+        }
+    }
+    
+    /**
+     * will generate an array of values from a SQL query which are
+     * used as filtering values for other queries
+     * @param string queryString SQL query string to run
+     * @param string lookUpKey which key represents the values to insert in the returned array
+     *                  (i.e. if we do &quot;SELECT Name...&quot; the lookUpKey is then &quot;Name&quot;)
+     * @return array values obtained from SF through the SQL query and lookUpKey 
+     */
+    this.getQueryFilterValuesFromSF = function(queryString, lookUpKey)
+    {
+        result = sforce.connection.query(&quot;Select Label from CampaignMemberStatus where CampaignId = &apos;{!Campaign.Id}&apos; &quot;);
+        records = result.getArray(&quot;records&quot;);
+        var returnArray = [];
+        
+        /*
+         * will go through all returned records and make a 
+         * returnArray based on the key we are looking for in
+         * the result set
+         */
+        for ( var i = 0; i &lt; records.length; i++)
+        {
+            returnArray[returnArray.length] = records[i][lookUpKey];
+        }
+        
+        return returnArray;
+    }
+    
+    /**
+     * will add a query filter to this object to filter the grabbed recipients from SF by
+     * ...this is a place holder for more types of filters to come -- but as of now just calls
+     * ...createQueryFilterCheckBox which does the main work...
+     * @param string whereAndClause a string which becomes the value of the checkBox -- and is used to filter the SF-Sql query
+     * @param array values an array representing filter display name =&gt; filter value
+     * @param string textDescription textual description for this block of checkboxes
+     * @param object defaultObj an object of &quot;value,display,name&quot; used to create a default value checkbox for the group
+     */
+    this.addQueryFilter = function(whereAndClause, values, textDescription, defaultObj)
+    {
+debugger;
+        hasQueryFilters = true;
+        
+        //we only have checkboxes right now, can have others in future
+        createQueryFilterCheckBox(whereAndClause, values, textDescription, defaultObj);
+    }
+    
+    /**
+     * will generate HTML for the queryFilter -- only returns checkbox
+     * ... filters as of now, but may include more types in the future
+     * @return string HTML content for query filtering
+     */
+    var setUpQueryFilters = function()
+    {
+        var returnHTML = &quot;&quot;;
+
+        returnHTML += queryFilterCheckBoxes;
+        
+        return returnHTML;
+    }
+    
+    /**
+     * will display a filtering dialog to the user and run a filtered query
+     * if the user presses submit on the dialog
+     * This fn modifies the DOM
+     * @param string query the query for SF
+     * @param object queryResult the SF queryResult object
+     * @param object scope the scope at which the subsuequent calls are made
+     * @param string checkBoxHTML the HTML for the filtering checkboxes
+     */
+    var showFilteringDialog = function(query, queryResult, scope, checkBoxHTML)
+    {
+        newDiv = document.createElement(&quot;div&quot;);
+        newForm = document.createElement(&quot;form&quot;);
+
+        //callback function, trick to preserve scope
+        var callBackFnSubmit = function()
+        {
+            scope.filterAndSearch(scope, query, queryResult, newForm);
+        }
+
+        //callback function, trick to preserve scope
+        var callBackFnCancel = function()
+        {
+            removeGeniusDialogWindow.call(scope);
+        }
+
+        if (newForm.addEventListener)
+        {
+            newForm.addEventListener(&quot;submit&quot;, callBackFnSubmit, true);
+            newForm.addEventListener(&quot;reset&quot;, callBackFnCancel, true);
+        }
+        else if (newForm.attachEvent)
+        {
+            newForm.attachEvent(&quot;onsubmit&quot;, callBackFnSubmit);
+            newForm.attachEvent(&quot;onreset&quot;, callBackFnCancel);
+        }
+        
+        newForm.action = &quot;javascript:void(0);&quot;;
+        newDiv.appendChild(newForm);
+        
+        var templateHTML = &quot;&quot;;
+        templateHTML += getGeniusWindowHead();
+        templateHTML += checkBoxHTML;
+        templateHTML += &quot;&lt;br&gt;&lt;input type=&apos;reset&apos; value=&apos;Cancel&apos;&gt;&quot;;
+        templateHTML += &quot;&lt;input type=&apos;submit&apos; value=&apos;OK&apos;&gt;&quot;;
+        templateHTML += getGeniusWindowEnd();
+        newForm.innerHTML = templateHTML;
+        newDiv.id = geniusDialogWindowDivID;
+
+        document.body.appendChild(newDiv);
+    }
+    
+    /**
+     * called by the filtering dialog to generate a SQL query that accounts
+     * for the requested filters on the main searh term
+     * @param object scope the scope at which subsequent calls are made
+     * @param string query the query to be run
+     * @param object queryResult SF&apos;s queryResult object
+     * @param object handledForm the form object that provides the filter values
+     */
+    this.filterAndSearch = function(scope, query, queryResult, handledForm)
+    {
+debugger;
+        var first = true;
+
+        queryAppend = &quot;&quot;;
+        var formEls = handledForm.elements;
+        /*
+         * loop through all form elements and gather up the query values for checked items
+         */
+        for (var i=0; i &lt; formEls.length; i++)
+        {
+            if (typeof (formEls[i]) != &apos;function&apos; &amp;&amp; formEls[i].checked == true)
+            {
+                if (!first)
+                {
+                    queryAppend += &quot; OR &quot;;
+                }
+                queryAppend += formEls[i].value;
+                first = false;
+            }
+        }
+        
+        if (queryAppend != &quot;&quot;)
+        {
+            removeGeniusDialogWindow();
+            query += &quot; AND ( &quot; + queryAppend + &quot; ) &quot;;
+            //Only commented out code left in... useful for getting the SF-Query
+            //console.log(&quot;NEW QUERY:&quot; + query);
+            scope.doQuery(query, queryResult, true);
+        }
+        else
+        {
+            //Prevent user from not making a selection
+            alert(&quot;Make a selection please...&quot;);
+        }
+        
+        return false;
+    }
+    
+    /**
+     * will generate HTML for a Genius dialog... opening head portion only
+     * use in conjuction with getGeniusWindowEnd
+     * @return string HTML for a genius window&apos;s opening markup
+     */
+    var getGeniusWindowHead = function()
+    {
+        var center = getWindowDimensions();
+        var x = (center.width/2) - 210;
+        var y = (center.height/2) - 40;
+        
+        var returnHTML = &quot;&quot;;
+        returnHTML += &quot;&lt;div style=&apos;font-family:tahoma,verdana,helvetica;z-index:99999999;background:#000;position:absolute;top:&quot;+y+&quot;px;left:&quot;+x+&quot;px;width:420px;&apos;&gt;&quot;;
+        returnHTML += &quot;&lt;table border=0 height=100% width=100% cellpadding=3 cellspacing=2&gt;&quot;;
+        returnHTML += &quot;&lt;tr style=&apos;background:#FF7600;&apos;&gt;&lt;td style=&apos;border-top: 1px #ffdabf solid&apos;&gt;&lt;span style=&apos;color:#ffffff; padding:6px; font-weight:700;&apos;&gt;Genius.com&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&quot;;
+        returnHTML += &quot;&lt;tr style=&apos;background:#fff;&apos; height=100% valign=top&gt;&lt;td style=&apos;padding:8px;&apos;&gt;&quot;;
+        return returnHTML;
+    }
+    
+    /**
+     * will generate HTML for a Genius dialog... closing portion only
+     * use in conjuction with getGeniusWindowHead
+     * @return string HTML for a genius window&apos;s closing markup
+     */
+    var getGeniusWindowEnd = function()
+    {
+        var returnHTML = &quot;&quot;;
+        returnHTML += &quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
+        returnHTML += &quot;&lt;/table&gt;&lt;/div&gt;&quot;;
+        return returnHTML;
+    }
+    
+    /**
+     * this function will update the progress bar indicators to show
+     * the completed portions of the progress bar in a different color
+     */
+    var updateProgressBar = function(queryResult, processedRecordsSoFar)
+    {
+        var filledInColor = &quot;#ffc000&quot;;
+        var maxRecords = queryResult.size;
+        var currentIVal = Math.round((processedRecordsSoFar / maxRecords) * 10);
+        //update all the indicators up to the max indicator to be updated
+        for (i = 1; i &lt;= currentIVal; i++)
+        {
+            var currentBox = document.getElementById(&apos;genius_progress_bar_section_&apos;+i+&apos;&apos;);
+            if (currentBox)
+            {
+                currentBox.style.backgroundColor = filledInColor;
+            }
+        }
+    }
+
+    /**
+     * doQuery will query SForce and look for sForceIds, if they are found the
+     * results are sent to SG
+     */
+    this.doQuery = function(query, queryResult, bypassFilter)
+    {
+        if (!bypassFilter)
+        {
+            bypassFilter = false;
+        }
+        //Determine if there are any filters to be applied to
+        //... the query, if so, prompt the user to filter the search
+        if (hasQueryFilters === true &amp;&amp; !bypassFilter)
+        {
+            var checkBoxHTML = setUpQueryFilters();
+            if (checkBoxHTML != &quot;&quot;)
+            {
+                showFilteringDialog(query, queryResult, this, checkBoxHTML);
+                return;
+            }
+        }
+        
+        // state that you need when the callback is called
+        var state = getState.call(this, query);
+        // callback object
+        var callback = getCallBack(state);
+
+        if (typeof (queryResult) != &apos;undefined&apos;)
+        {
+            sforce.connection.queryMore(queryResult.queryLocator, callback);
+        }
+        else
+        {
+            delete this.output;
+            this.output = null;
+            this.output = new sforce.StringBuffer();
+            processedRecordsSoFar = 0;
+            createProgressBarWindow();
+            sforce.connection.query(query, callback);
+        }
+    }
+}
+
+//Code to invoke the class above for gathering campaign
+// members and sending to genius-app
+var sgLaunchPad = new sgLaunchPadURLGenerator();
+sgLaunchPad.addExpectedIdField(&apos;LeadId&apos;);
+sgLaunchPad.addExpectedIdField(&apos;ContactId&apos;);
+sgLaunchPad.setMainURL(&quot;https://www.salesgenius.com/&quot;);
+sgLaunchPad.addTargetString(&quot;updateList&quot;);
+sgLaunchPad.addCustomParameters({campaignName:&quot;{!Campaign.Name}&quot;});
+//Filter code
+
+sgLaunchPad.addQueryFilter(&quot; Status = &quot;, 
+        sgLaunchPad.getQueryFilterValuesFromSF(&quot;Select Label from CampaignMemberStatus where CampaignId = &apos;{!Campaign.Id}&apos; &quot;, &quot;Label&quot;), 
+        &quot;Please filter your results based on member status&quot;,
+        {name:&quot;blank&quot;, value:&quot;&quot;, display:&quot;-&quot;});
+//sgLaunchPad.addCustomParameters(&quot;campaignName=&quot;+encodeURIComponent(&quot;{!Campaign.Name}&quot;));
+sgLaunchPad.doQuery(&quot;Select LeadId, ContactId from CampaignMember where CampaignId = &apos;{!Campaign.Id}&apos;&quot;);</url>
+    </webLinks>
+</CustomObject>

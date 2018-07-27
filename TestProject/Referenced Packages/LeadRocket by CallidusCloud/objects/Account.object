@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <webLinks>
+        <fullName>Create_Genius_E_mail_Account_DPL</fullName>
+        <availability>online</availability>
+        <description>Compose and send Genius e-mail to the person account. Person account must have a valid e-mail address and be owned by a Genius user.</description>
+        <displayType>link</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Create Genius E-mail</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>{!REQUIRESCRIPT(&quot;/soap/ajax/18.0/connection.js&quot;)}
+
+var tempresult = sforce.connection.query(&quot;Select Id, Name from Contact where AccountId = &apos;&quot;+&quot;{!Account.Id}&quot;+&quot;&apos; &quot;);
+var contacts = tempresult.getArray(&quot;records&quot;);
+contacts[0].Id = contacts[0].Id.substr(0,15);
+var recordid = contacts[0].Id;
+
+var nextURL = &quot;https://www.salesgenius.com/Salesforce/mgLaunchPad.php?target=createEmail&amp;rid=&quot; + recordid + &quot;&amp;uid={!User.Id}&amp;session={!API.Session_ID}&amp;server={!API.Partner_Server_URL_180}&quot;;
+var left = 100;
+var top = 100;
+var clientWidth = 1000;
+var clientHeight = 600;
+var windowParam = &quot;toolbar, titlebar, status, hotkeys, scrollbars, menubar, location,&quot;;
+var windowName = &apos;MGApplication&apos;;
+var clientWindow = window.open( nextURL, windowName,windowParam + &apos; width=&apos; + clientWidth + &apos;, height=&apos;+ clientHeight + &apos;, left=&apos;+left + &apos;,top=&apos;+top+&apos;,resizable=yes&apos;);
+clientWindow.focus();</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Genius_History_Account_DPL</fullName>
+        <availability>online</availability>
+        <description>View Genius e-mail, web site visit, and chat history for this person account. Person account must have a valid e-mail address and be owned by a Genius user or Salesforce.com queue.</description>
+        <displayType>link</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Genius History</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>{!REQUIRESCRIPT(&quot;/soap/ajax/18.0/connection.js&quot;)}
+
+var tempresult = sforce.connection.query(&quot;Select Id, Name, Email from Contact where AccountId = &apos;&quot;+&quot;{!Account.Id}&quot;+&quot;&apos; &quot;);
+var contacts = tempresult.getArray(&quot;records&quot;);
+var email = contacts[0].Email;
+
+var nextURL = &quot;https://www.salesgenius.com/Salesforce/mgLaunchPad.php?target=contactHistory&amp;email=&quot; + email + &quot;&amp;uid={!User.Id}&amp;session={!API.Session_ID}&amp;server={!API.Partner_Server_URL_180}&quot;;
+var left = 100;
+var top = 100;
+var clientWidth = 1000;
+var clientHeight = 600;
+var windowParam = &quot;toolbar, titlebar, status, hotkeys, scrollbars, menubar, location,&quot;;
+var windowName = &apos;MGApplication&apos;;
+var clientWindow = window.open( nextURL, windowName,windowParam + &apos; width=&apos; + clientWidth + &apos;, height=&apos;+ clientHeight + &apos;, left=&apos;+left + &apos;,top=&apos;+top+&apos;,resizable=yes&apos;);
+clientWindow.focus();</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Launch_Genius_Tracker_Account_DPL</fullName>
+        <availability>online</availability>
+        <description>Open the Genius Tracker to monitor e-mail, web site visits, and chats.</description>
+        <displayType>link</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Launch Genius Tracker</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>var nextURL = &quot;https://www.salesgenius.com/Salesforce/mgLaunchPad.php?target=tracker&amp;uid={!User.Id}&amp;session={!API.Session_ID}&amp;server={!API.Partner_Server_URL_180}&quot;;
+var left = 100;
+var top = 100;
+var clientWidth = 270;
+var clientHeight = 452;
+var windowParam = &quot;titlebar=no, hotkeys=no,&quot;;
+var windowName = &apos;MGClient&apos;;
+var clientWindow = window.open( nextURL, windowName,windowParam + &apos; width=&apos; + clientWidth + &apos;, height=&apos;+ clientHeight + &apos;, left=&apos;+left + &apos;,top=&apos;+top+&apos;,resizable=yes&apos;);
+clientWindow.focus();</url>
+    </webLinks>
+</CustomObject>

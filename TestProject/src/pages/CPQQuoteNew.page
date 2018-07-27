@@ -1,0 +1,3 @@
+<apex:page standardController="Quote__c" showHeader="true" >
+<apex:iframe scrolling="true" height="1000" src="https://v6.webcomcpq.com/salesforce/SfLogin.aspx?sfauthUserID={!$User.Username}&apiPartnerURL={!$Api.Partner_Server_URL_160}&apiSessionID={!$Api.Session_ID}&domain_name=WaveMark&apiPass=Password&action=New&sfqpOpportunityID={!Quote__c.Opportunity__c}" />
+</apex:page>

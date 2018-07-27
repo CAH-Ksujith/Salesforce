@@ -1,0 +1,2 @@
+<iframe frameborder="0" width="100%"  height="500" style="border: 1px solid #FFFFFF;" src="https://www.salesgenius.com/Salesforce/sfSControlDyna.php?uid={!User.Id}&session={!API.Session_ID}&server={!API.Partner_Server_URL_190}&{!NOW()}">
+</iframe>

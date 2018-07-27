@@ -1,0 +1,187 @@
+<apex:page id="pg" showHeader="true" sidebar="false" standardStylesheets="false">
+  <!-- Begin Default Content REMOVE THIS -->
+<apex:stylesheet value="{!$Resource.dolly__CssClone}"/>
+  <style>
+  body {
+  background: #ffffff;
+  
+}
+ #container{
+  width: 1000px;
+  margin: 0 auto;
+  min-height: 925px;
+  height: auto;
+  box-shadow: 0px 0px 13px #000000;
+  border: 1px solid #ccc;
+  background: #ffffff;
+ }
+ #wrapper{
+  width: 930px;
+  margin: 0 auto;
+ }
+#content {
+        height: auto;
+        background: #DFE8F6;
+        width: 820px;
+        min-height: 700px;
+        <!-- padding: 60px; -->
+        padding: 60px 55px;
+        box-shadow: 0px 0px 13px #000000;      
+}
+#head {
+  height: 177px;
+  background: #fff;
+}
+.title {
+ <!-- font-family: PT Sans, sans-serif; -->
+  font-family: Helvetica Neue,Helvetica,Arial;
+  font-weight: Normal;
+  font-size: 150%;
+}
+tr.spaceUnder > td
+{
+  padding-top: 4em;
+}
+tr.spaceUnder1 > td
+{
+  padding-top: 4em;
+}
+  </style>
+  <body>
+   <apex:form >
+    <div id="container">
+     <div id="wrapper">
+         <div id="head">
+             <apex:image url="{!$Resource.dolly__BANNER}" width="930" height="177"/>
+         </div> 
+         <br/> 
+         <div id="content">
+            <div class= "title">   
+             <p><font size="4" face="italic" color="black">
+                <i> Dolly APP is an easy way of creating clone of an object. 
+                    You can simply select a source object and give name for the new object. 
+                    All the fields will be automatically copied to the new object.
+                </i>  <!-- Example if you need to create a clone for Account object into a new object, so you
+                 need to simply select Account in this app.-->
+                 </font>
+             </p>
+          <table>
+             <tr>
+               <td><font size="3" face="verdana" color="black"> 
+                     1. Clone object into new object with all it's fields being cloned.
+                  </font> 
+               </td>
+               
+               <td>
+                  <apex:outputLink value="/apex/AstreaObjectClone" id="Clone4">
+                     <apex:image url="{!$Resource.dolly__Logo1}" width="50" height="40"/> 
+                  </apex:outputlink>
+               </td>
+              </tr> 
+              
+             <tr>
+               <td><font size="3" face="verdana" color="black"> 
+                     2. Copy fields from one existing object to another existing object.
+                   </font> 
+               </td> 
+               <td>
+                   <apex:outputLink value="/apex/AstreaFieldClone" id="Clone5">
+                      <apex:image url="{!$Resource.dolly__LOGO3}" width="50" height="40"  /> 
+                   </apex:outputlink>
+               </td>
+             </tr> 
+              
+             <tr>
+               <td><font size="3" face="verdana" color="black"> 
+                     3. Clone a field into many fields of same type in one click only.
+                   </font>
+               </td>
+               <td>
+                 <apex:outputLink value="/apex/CloneMultipleFields" id="Clone6">
+                   <apex:image url="{!$Resource.dolly__Logo4}" width="50" height="40"  /> 
+                 </apex:outputlink>
+               </td>
+            </tr>
+            
+            <tr class="spaceUnder">
+              <td><font size="2" face="verdana" color="black">
+               <b> *Required Settings </b>
+                  </font> 
+              </td> 
+            </tr>
+            <tr>
+              <td><font size="2" face="verdana" color="black">
+                1. Select <b>Dolly App</b> from the menu coming in top right corner> Click on <b>Dolly Home</b> tab.
+                </font>
+              </td> 
+            </tr>
+            <tr>
+              <td><font size="2" face="verdana" color="black">
+                2. <b>Copy</b> the URL coming in Top URL Panel
+                </font>
+              </td> 
+            </tr>
+            <tr>
+              <td><font size="2" face="verdana" color="black">
+                3. <b> Example </b>- Eg.https://dolly.ap2.visual.force.com 
+                </font>
+              </td> 
+            </tr>
+            <tr>
+              <td><font size="2" face="verdana" color="black">
+                4. Now Go to <b>Setup</b> > <b>in Administer</b> > <b>Security Controls</b> > <b>Remote Site Settings</b>                 
+                </font>
+              </td> 
+            </tr>
+            <tr>
+              <td><font size="2" face="verdana" color="black">
+                5. Create a <b>New </b> Remote Site Setting > <b> Paste </b> the URL copied above inside <b> Remote Site URL </b> > <b> Save </b>
+                </font>
+              </td> 
+            </tr>  
+            
+            <tr class="spaceUnder1">
+              <td><font size="2" face="verdana" color="black">
+               <b> *Limitations </b>
+                  </font> 
+              </td> 
+            </tr>
+            <tr>
+              <td><font size="2" face="verdana" color="black">
+                1. RichTextArea, Geolocation, Rollup, External Lookup - Fields of these type cannot be cloned using this app.
+                </font>
+              </td> 
+            </tr>
+            <tr>
+              <td><font size="2" face="verdana" color="black">
+                2. Checkbox - For this, the defaut value has to be set by user after the field gets cloned.
+                </font>
+              </td> 
+            </tr>
+            <tr>
+              <td><font size="2" face="verdana" color="black">
+                3. Autonumber - For this, Starting number and Display format has to be set by user.
+                </font>
+              </td> 
+            </tr>
+            <tr>
+              <td><font size="2" face="verdana" color="black">
+                4. Formula - Formula fields referring to standard fields is not cloned.
+                </font>
+              </td> 
+            </tr>  
+            <tr>
+              <td><font size="2" face="verdana" color="black">
+                5. Standard fields will not get cloned in this app.
+                </font>
+              </td> 
+            </tr>   
+        </table>
+             
+            </div> 
+         </div>
+       </div>
+     </div> 
+   </apex:form> 
+ </body> 
+</apex:page>

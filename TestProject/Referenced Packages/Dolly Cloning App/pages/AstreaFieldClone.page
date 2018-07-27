@@ -1,0 +1,274 @@
+<apex:page controller="dolly.AstreaFieldCloneCtr" id="pg" showHeader="true" sidebar="false" standardStylesheets="false">
+<apex:stylesheet value="{!UrlFor($Resource.dolly__AutoCompleteText,'/jquery/jquery-ui.css')}"/>
+    <apex:includeScript value="{!UrlFor($Resource.dolly__AutoCompleteText,'/jquery/jquery-1.8.js')}"/>
+    <apex:includeScript value="{!UrlFor($Resource.dolly__AutoCompleteText,'/jquery/jquery-ui.js')}"/>
+    <style>
+        .ui-autocomplete-loading { 
+            background: white url("{!$Resource.dolly__ajaxLoad}") right center no-repeat;     
+        }
+        .autocomplete{
+            border-color: #929292 #D5D5D5 #D5D5D5 #929292 !important;
+            border-style: solid;border-width: 1px !important;
+            height: 18px !important;
+            padding: 3px 10px;width: 534px !important;
+        }
+        .button{
+            height: 30px;
+            vertical-align: middle;
+            width: 100px;
+            color: #FFFFFF;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            border-radius:6px;
+            border-width:2px;  
+            background-color: rgb(0, 126, 187);
+        }
+        .input{
+             border:inset 2px gray;    
+             font-size: 15px;
+             font-family: Verdana, Arial, Helvetica, sans-serif;   
+        }
+        .label{
+             font-size: 15px;
+             font-family: Verdana, Arial, Helvetica, sans-serif;
+        }
+        .label1{
+             font-size: 13px;
+             font-family: Verdana, Arial, Helvetica, sans-serif;
+             font-weight: bold;
+        }
+       .title {
+             color:#0e291c;
+             font-size: 48.5px;
+             margin: 0 0 10px;
+             border-bottom: 1px solid #000548;
+             font-family: PT Sans, sans-serif;
+             font-weight: Normal;
+             line-height: 1.2;
+             text-rendering: optimizelegibility;
+       }
+       .content h7{
+            font-family: PT Sans, sans-serif;
+            font-weight: Normal;
+       }
+        body {
+            background: #ffffff;
+         }
+        #container{
+            width: 1000px;
+            margin: 0 auto;
+            min-height: 925px;
+            height: auto;
+            box-shadow: 0px 0px 13px #000000;
+            border: 1px solid #ccc;
+            background: #ffffff;
+       }
+       #wrapper{
+            width: 930px;
+            margin: 0 auto;
+       }
+       #content{
+            height: auto;
+            background: #DFE8F6;
+            width: 820px;
+            min-height: 700px;
+            padding: 60px 55px;
+            box-shadow: 0px 0px 13px #000000;      
+       }
+       #head{
+            height: 177px;
+            background: #fff;
+       }
+      .title {
+            font-family: Helvetica Neue,Helvetica,Arial;
+            font-weight: Normal;
+            font-size: 150%;
+      }
+    </style>
+    <script type="text/javascript">
+        //To remove conflictions of jquery
+        var j$ = jQuery.noConflict();            
+        j$(document).ready(function() {
+             addAutoCompleteEvent('pg:frm:objname','objname');
+             addAutoCompleteEvent('pg:frm:newobname','newobname');
+        });  
+        function addAutoCompleteEvent(ElementId, idName){
+            
+            //Auto complete textbox component
+            var autoCompleteTextBoxId = "input[id$='"+ElementId+"']";
+            var queryTerm;
+            //auto complete method
+            j$(autoCompleteTextBoxId).autocomplete({
+                minLength: 1,
+                source: function(request, response) {
+                            queryTerm = request.term;
+                            
+                            var sObjects;
+                            var searchText = j$(autoCompleteTextBoxId).val();
+                            //alert(searchText);
+                            dolly.AstreaFieldCloneCtr.getRecords(searchText,function(result, event){
+                                if(event.type == 'exception') {
+                                      alert(event.message);
+                                } else {
+                                     //alert(result);
+                                     sObjects = result;
+                                     response(sObjects);
+                                }
+                            });
+                       },
+                focus: function( event, ui ) {
+                        j$(autoCompleteTextBoxId).val( ui.item.Name);
+                        return false;
+                        },
+                select: function( event, ui ) {
+                            //j$(autoCompleteTextBoxId).val( ui.item.Name);                                
+                            //j$("input[id$='searchId']").val(ui.item.Id);
+                            j$("input[id$="+idName+"]").val(ui.item.Name);
+                            
+                            if(idName == 'objname'){
+                                callRetField();
+                            }
+                            return false; 
+                        },
+             })
+             .data( "autocomplete" )._renderItem = function( ul, item ) {
+                var entry = " " + item.Name;
+                j$.each("".split(",") , function(key, value) {
+                 
+                });
+                entry = entry + " ";
+                entry = entry.replace(queryTerm, "<b>" + queryTerm + "</b>");
+                return j$( "<li></li>" )
+                    .data( "item.autocomplete", item )
+                    .append("<a>" + entry + "</a>")
+                    .appendTo( ul );
+            };
+        }
+        function callCreateFields(check,msg){
+        
+           var flag = check;
+           var mes = msg;
+       
+           var x=document.getElementById("pg:frm:newobname");
+           var y=document.getElementById("pg:frm:objname");
+           
+           if( (document.getElementById("pg:frm:objname").value == '') && (document.getElementById("pg:frm:newobname").value == '') ){
+                alert('Please enter object name and destination object name.');
+                window.location.reload();
+            }
+           else if(document.getElementById("pg:frm:objname").value == ''){
+                alert('Please enter object name');
+                window.location.reload();
+            }
+           else if(document.getElementById("pg:frm:newobname").value == ''){
+                alert('Please enter destination object name');
+                window.location.reload();
+            }
+           else if(x.value == y.value){
+                alert('object and newobject name can not be same');
+                window.location.reload();
+            }
+           else if(flag == "true"){
+                alert(mes);
+                window.location.reload();
+            }  
+           else{
+          // alert('testtttt');
+           
+              callFetchFieldFunction();
+             //  alert('testtttting');
+            }    
+        } 
+        
+        function checkAll(cb,cbid)
+        {
+            var inputElem = document.getElementsByTagName("input");                     
+            for(var i=0; i<inputElem.length; i++)
+            {             
+                 if(inputElem[i].id.indexOf(cbid)!=-1){                                        
+                    inputElem[i].checked = cb.checked;
+                }
+            }
+        }
+       
+        function callRetField(){
+            CallRetFieldFunc();
+        }
+   
+  
+    </script>    
+    <body>
+    <apex:form id="frm">
+
+    <apex:actionFunction name="callFetchFieldFunction" action="{!FetchField}" status="counterStatus1"  oncomplete="if({!ProcessedAll} == false) {callFetchFieldFunction()} else{ alert('cloning successful'); alert('Please note that you need to add the fields on the Pagelayout and set the Field Level Settings to make it visible on layout'); window.location.reload();}" /> 
+    <apex:actionFunction name="CallRetFieldFunc" action="{!retField}"/>
+    <apex:actionStatus id="counterStatus2">
+             <apex:facet name="start"> <c:StatusPopup Message="Cloning..."/> </apex:facet>
+    </apex:actionStatus>
+    
+     <div id="container">
+      <div id="wrapper">
+       <div id="head">
+             <apex:image url="{!$Resource.dolly__BANNER}" width="930" height="177"/>
+       </div> 
+         <br/>
+       <div id="content">
+       <apex:pageMessages />
+       <div class= "title">
+          <h7>
+            Clone Field- <span style="font-size:16px; font-style: italic;">Copy fields from one existing object to another existing object. A user can select source object and destination object from the list. Clone fields button will clone the fields of source object into destination object.</span>
+          </h7>
+       </div>
+       <br/>
+       <apex:outputPanel >
+         <table>
+         
+         <tr>
+           <td style="padding-left: 60px;"><apex:outputLabel value="Select the source object name" styleClass="label1"/></td>
+           <td style="padding-left: 70px;width:20px"></td>
+           <td style="padding-left: 90px;"><apex:outputLabel value="Select the destination object name" styleClass="label1"/></td>
+         </tr>
+         
+         <tr style="height:20px"></tr>
+  
+         <tr>
+           <td style="padding-left: 60px;"><apex:outputLabel value="Source Object" styleClass="label"/>&nbsp;&nbsp;&nbsp;<apex:inputText value="{!objectName}" id="objname" styleClass="input"/></td>
+           <td style="padding-left: 70px; width:20px"></td>
+           <td style="padding-left: 90px;"><apex:outputLabel value="Destination Object" styleClass="label"/>
+           &nbsp;&nbsp;&nbsp;<apex:inputText value="{!newObjectName}" id="newobname" styleClass="input" /></td>
+        </tr>  
+        <tr>
+           <td style="padding-left: 60px;">
+             <apex:inputCheckbox onclick="checkAll(this, 'check1')"/>
+             <apex:outputLabel value="Select/Deselect Checkboxes"/>
+           </td>
+        </tr>
+        <apex:repeat value="{!fields}" var="fls">
+        <tr>
+           <td style="padding-left: 60px; padding-top: 5px;">
+               <apex:inputCheckbox value="{!fls.isSelected}" id="check1"/>
+               <apex:outputText escape="false" value="{!fls.name}" />
+           </td>
+       </tr>
+       </apex:repeat>
+       <tr>
+         <td style="padding-left: 60px; padding-top: 30px;"></td>  
+         <td style="padding-left: 70px; padding-top: 30px; width:20px" valign="top">
+               <apex:commandButton value="Clone Fields" styleClass="button" reRender="frm"  action="{!sameobjectcheck}" oncomplete="callCreateFields('{!NewFlag}','{!JSENCODE(alertmessages)}');"/>
+               <apex:actionStatus id="counterStatus1">
+                     <apex:facet name="start"> <c:StatusPopup Message="Cloning..." /> </apex:facet>
+                     <apex:facet name="stop"> </apex:facet>
+               </apex:actionStatus>
+         </td>
+         <td style="padding-left: 90px; padding-top: 30px;"></td>
+       </tr>
+       
+     </table>    
+   </apex:outputPanel>
+
+        </div>
+      </div>
+    </div>  
+   </apex:form>
+  </body>  
+</apex:page>

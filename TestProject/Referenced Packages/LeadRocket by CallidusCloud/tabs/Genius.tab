@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Genius for AppExchange allows Salesforce.com  organizations access to easy-to-use Marketing Automation, Demand Generation and Email marketing solutions designed to meet the specific needs of your organization.</description>
+    <frameHeight>800</frameHeight>
+    <hasSidebar>false</hasSidebar>
+    <label>Genius.com</label>
+    <mobileReady>false</mobileReady>
+    <motif>Custom15: People</motif>
+    <url>https://www.salesgenius.com/Salesforce/geniusTab.php?uid={!$User.Id}&amp;session={!$Api.Session_ID}&amp;server={!$Api.Partner_Server_URL_180}&amp;unique={!URLENCODE(TEXT(NOW()))}&amp;version=2.3</url>
+    <urlEncodingKey>UTF-8</urlEncodingKey>
+</CustomTab>

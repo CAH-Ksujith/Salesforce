@@ -1,0 +1,21 @@
+<apex:page controller="lntcms.DuplicateCases" sidebar="false">
+<apex:form >
+  <br/>
+  <h3><center> You have successfully merged the selected cases !!!</center></h3>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <apex:outputPanel id="counter">
+  <center>
+        <apex:image url="/img/loading32.gif" /><br/><br/> 
+   <apex:actionStatus startText="Redirecting to Master Case..."  stopText="Redirecting to Master Case..." id="counterStatus"/>
+        
+    <apex:actionPoller action="{!MasterCase}" reRender="counter,form" interval="5"/>
+  </center>  
+  </apex:outputPanel>  
+
+     
+                  
+</apex:form>    
+</apex:page>
